@@ -1,4 +1,4 @@
-// ADICIONE NO TOPO
+// controllers/consultaController.js
 const { prisma } = require('../../../config/database'); // ← IMPORTA PRISMA
 
 const AgendarTeleconsulta = require('../../../domain/use-cases/agendarTeleconsulta');
@@ -23,7 +23,6 @@ async function listarConsultasHoje(req, res) {
     res.status(500).json({ error: 'Erro ao buscar consultas' });
   }
 }
-
 
 // === FUNÇÃO PRINCIPAL ===
 async function agendarTeleconsulta(req, res) {
@@ -76,4 +75,49 @@ async function estatisticasConsultasPorData(req, res) {
   }
 }
 
-module.exports = { agendarTeleconsulta, listarConsultas, estatisticasConsultasPorData};
+/*Eliminar uma consulta */
+async function deletarConsulta(req, res) {
+  try {
+    const { id } = req.params;
+
+    const consulta = await consultaRepository.findById(id);
+    if (!consulta) {
+      return res.status(404).json({ error: 'Consulta não encontrada' });
+    }
+
+    await consultaRepository.delete(id);
+
+    res.status(200).json({ message: 'Consulta excluída com sucesso' });
+  } catch (error) {
+    console.error('Erro ao excluir consulta:', error);
+    res.status(500).json({ error: 'Erro ao excluir consulta' });
+  }
+
+
+  
+
+}
+
+async function marcarConsultaRealizada(req, res) {
+  try {
+    const { id } = req.params;
+
+    const consulta = await consultaRepository.findById(id);
+    if (!consulta) {
+      return res.status(404).json({ error: "Consulta não encontrada" });
+    }
+
+    const atualizada = await consultaRepository.update(id, {
+      realizada: true
+    });
+
+    res.json({ message: "Consulta marcada como realizada", consulta: atualizada });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Erro ao marcar consulta como realizada" });
+    }
+  }
+
+
+
+module.exports = { agendarTeleconsulta, listarConsultas, estatisticasConsultasPorData, deletarConsulta, marcarConsultaRealizada};

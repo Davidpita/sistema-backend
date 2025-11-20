@@ -15,6 +15,23 @@ class LeituraClinicaRepository extends ILeituraClinicaRepository {
     });
   }
 
+  async findAll() {
+  return await prisma.leituraClinica.findMany({
+    include: {
+      utente: { select: { id: true, nome: true, contacto: true } }
+    },
+    orderBy: { dataHora: 'desc' }
+  });
+}
+
+  async findByUtenteId(utenteId) {
+    return await prisma.leituraClinica.findMany({
+      where: { utenteId },
+      orderBy: { dataHora: 'desc' }
+    });
+  }
+
+
   async findUtenteById(utenteId) {
     return await prisma.utente.findUnique({ where: { id: utenteId } });
   }
@@ -22,10 +39,10 @@ class LeituraClinicaRepository extends ILeituraClinicaRepository {
   async findByZonaAndPeriodo(zonaId, periodoInicio, periodoFim) {
     return await prisma.leituraClinica.findMany({
       where: {
-        utente: { idLocal: zonaId },
+        utente: { idLocal: String(zonaId) },
         dataHora: {
-          gte: new Date(periodoInicio),
-          lte: new Date(periodoFim)
+          gte: periodoInicio,
+          lte: periodoFim
         }
       }
     });

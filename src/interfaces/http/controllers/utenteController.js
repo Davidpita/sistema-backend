@@ -142,7 +142,30 @@ async function editarUtente(req, res) {
   }
 }
 
+// === LISTAR CONSULTAS DO UTENTE ===
+async function listarConsultasDoUtente(req, res) {
+  try {
+    const { id } = req.params; // ID do utente passado na URL
+
+    // Verifica se o utente existe
+    const utente = await utenteRepository.findById(id);
+    if (!utente) {
+      return res.status(404).json({ error: 'Utente não encontrado' });
+    }
+
+    const consultas = await utenteRepository.findConsultasByUtenteId(id);
+    res.json({
+      utente: { id: utente.id, nome: utente.nome, contacto: utente.contacto },
+      totalConsultas: consultas.length,
+      consultas,
+    });
+  } catch (error) {
+    console.error('Erro ao listar consultas do utente:', error);
+    res.status(500).json({ error: 'Erro ao listar consultas do utente' });
+  }
+}
 
 
-module.exports = { criarUtente, loginUtente, listarUtentes,listarPerfil, eliminarUtente, editarUtente };
+
+module.exports = { criarUtente, loginUtente, listarUtentes,listarPerfil, eliminarUtente, editarUtente, listarConsultasDoUtente };
 

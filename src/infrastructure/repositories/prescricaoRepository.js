@@ -1,3 +1,4 @@
+/*infrastructure/repositories/prescricaoRepository.js */
 const IPrescricaoRepository = require('../../interfaces/repositories/iPrescricaoRepository');
 const { prisma } = require('../../config/database');
 

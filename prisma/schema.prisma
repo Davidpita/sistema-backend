@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -14,21 +8,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//Modelo Usuario
 model Usuario {
-  id        String   @id @default(uuid())
+  id        String     @id @default(uuid())
   nome      String
-  email     String   @unique
+  email     String     @unique
   senha     String
-  papel     String // ex.: utente, agente, enfermeiro, medico, gestor
-  mfaSecret String? // Para MFA (opcional, ex.: segredo para TOTP)
-  criadoEm  DateTime @default(now())
+  papel     String
+  mfaSecret String?
+  criadoEm  DateTime   @default(now())
+  Consulta  Consulta[]
 
-  // Índice para buscas rápidas por email
   @@index([email])
 }
 
-// Modelo Utente
 model Utente {
   id             String           @id @default(uuid())
   nome           String
@@ -36,41 +28,39 @@ model Utente {
   sexo           String?
   contacto       String?          @unique
   localizacao    String?
-  idLocal        String? // Relacionamento com Zona
-  zona           Zona?            @relation(fields: [idLocal], references: [id]) // Relação opcional 1:N com Zona
-  senha          String? 
-  consultas      Consulta[] // Relação 1:N com Consulta
-  leituras       LeituraClinica[] // Relação 1:N com LeituraClinica
-  triagens       Triagem[] // Relação 1:N com Triagem
-  notificacoes   Notificacao[] // Relação 1:N com Notificacao
+  idLocal        String?
+  senha          String?
+  consultas      Consulta[]
+  leituras       LeituraClinica[]
+  notificacoes   Notificacao[]
+  triagens       Triagem[]
+  zona           Zona?            @relation(fields: [idLocal], references: [id])
 }
 
-// Modelo Consulta
 model Consulta {
   id             String      @id @default(uuid())
   utenteId       String
   profissionalId String?
-  tipo           String // ex.: triagem/teleconsulta/presencial
+  tipo           String
   data           DateTime
   resumo         String?
   prescricaoId   String?     @unique
-  utente         Utente      @relation(fields: [utenteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  prescricao     Prescricao? @relation
+  realizada      Boolean     @default(false)
+  Usuario        Usuario?    @relation(fields: [profissionalId], references: [id])
+  utente         Utente      @relation(fields: [utenteId], references: [id], onDelete: Cascade)
+  prescricao     Prescricao?
 }
 
-// Modelo LeituraClinica
 model LeituraClinica {
   id          String   @id @default(uuid())
   utenteId    String
-  tipo        String // ex.: PA/glicemia/peso
+  tipo        String
   valor       Float
   dataHora    DateTime @default(now())
   inseridoPor String?
-  utente      Utente   @relation(fields: [utenteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  utente      Utente   @relation(fields: [utenteId], references: [id], onDelete: Cascade)
 }
 
-// Modelo Prescricao
-// Modelo Prescricao
 model Prescricao {
   id          String   @id @default(uuid())
   consultaId  String   @unique
@@ -79,23 +69,19 @@ model Prescricao {
   duracao     String?
   observacoes String?
   dataCriacao DateTime @default(now())
-  consulta    Consulta @relation(fields: [consultaId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  consulta    Consulta @relation(fields: [consultaId], references: [id], onDelete: Cascade)
 }
 
-
-// Modelo Triagem
-// Modelo Triagem
 model Triagem {
   id            String   @id @default(uuid())
   utenteId      String
-  respostasJson String // JSON para respostas do questionário
+  respostasJson String
   resultado     String
   recomendacao  String?
   data          DateTime @default(now())
-  utente        Utente   @relation(fields: [utenteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  utente        Utente   @relation(fields: [utenteId], references: [id], onDelete: Cascade)
 }
-// Modelo Notificacao
-// Modelo Notificacao
+
 model Notificacao {
   id        String   @id @default(uuid())
   utenteId  String
@@ -103,24 +89,22 @@ model Notificacao {
   mensagem  String
   enviadoEm DateTime @default(now())
   status    String?
-  utente    Utente   @relation(fields: [utenteId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  utente    Utente   @relation(fields: [utenteId], references: [id], onDelete: Cascade)
 }
 
-// Modelo Auditoria
 model Auditoria {
   id         String   @id @default(uuid())
-  entidade   String // ex.: Utente, Consulta
+  entidade   String
   entidadeId String
-  acao       String // ex.: create, update, delete
+  acao       String
   userId     String?
   timestamp  DateTime @default(now())
   detalhe    String?
 }
 
-// Modelo Zona
 model Zona {
   id          String   @id @default(uuid())
   nome        String
-  coordenadas String? // Para análise geográfica (ex.: GeoJSON)
-  utentes     Utente[] // Relação 1:N com Utente
+  coordenadas String?
+  utentes     Utente[]
 }

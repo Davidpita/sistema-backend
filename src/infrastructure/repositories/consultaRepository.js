@@ -1,3 +1,4 @@
+/*infrastruture/repositories/consultaRepository.js */
 const IConsultaRepository = require("../../interfaces/repositories/iConsultaRepository");
 const { prisma } = require("../../config/database");
 
@@ -12,6 +13,7 @@ class ConsultaRepository extends IConsultaRepository {
         data: consulta.data,
         resumo: consulta.resumo,
         prescricaoId: consulta.prescricaoId,
+        realizada: consulta.realizada,
       },
     });
   }
@@ -81,6 +83,12 @@ class ConsultaRepository extends IConsultaRepository {
       },
     });
   }
+
+  async delete(id) {
+  return await prisma.consulta.delete({
+    where: { id },
+  });
+}
 
 
 }

@@ -7,7 +7,7 @@ class AuditoriaRepository extends IAuditoriaRepository {
       data: {
         id: auditoria.id,
         entidade: auditoria.entidade,
-        entidadeId: auditoria.entidadeId,
+        entidadeId: String(auditoria.entidadeId),
         acao: auditoria.acao,
         userId: auditoria.userId,
         timestamp: auditoria.timestamp,

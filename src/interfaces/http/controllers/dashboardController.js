@@ -12,17 +12,27 @@ module.exports = {
   },
 
   async getConsultasHoje(req, res) {
-    try {
-      const hoje = new Date();
-      hoje.setHours(0, 0, 0, 0);
-      const consultasHoje = await prisma.consulta.count({
-        where: { data: { gte: hoje } }
-      });
-      return res.json({ consultasHoje });
-    } catch (error) {
-      return res.status(500).json({ error: 'Erro ao obter consultas de hoje' });
-    }
-  },
+  try {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+
+    const consultasHoje = await prisma.consulta.findMany({
+      where: {
+        data: { gte: hoje },
+      },
+      include: {
+        utente: true,
+      },
+      orderBy: { data: 'asc' },
+    });
+
+    return res.json({ consultas: consultasHoje });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Erro ao obter consultas de hoje' });
+  }
+},
+
 
  async getTriagensHoje(req, res) {
   try {

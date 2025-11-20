@@ -22,10 +22,10 @@ class TriagemRepository extends ITriagemRepository {
   async findByZonaAndPeriodo(zonaId, periodoInicio, periodoFim) {
     return await prisma.triagem.findMany({
       where: {
-        utente: { idLocal: zonaId },
+        utente: { idLocal: String(zonaId) },
         data: {
-          gte: new Date(periodoInicio),
-          lte: new Date(periodoFim),
+          gte: periodoInicio,
+          lte: periodoFim,
         },
       },
     });
@@ -83,6 +83,27 @@ class TriagemRepository extends ITriagemRepository {
     orderBy: { _count: { zona: 'desc' } }
   });
 }
+
+// src/infrastructure/repositories/triagemRepository.js
+
+async findByUtenteId(utenteId) {
+  return await prisma.triagem.findMany({
+    where: { utenteId },
+    include: {
+      utente: {
+        select: {
+          id: true,
+          nome: true,
+          contacto: true,
+          sexo: true,
+          dataNascimento: true
+        }
+      }
+    },
+    orderBy: { data: 'desc' }
+  });
+}
+
 
 }
 

@@ -1,3 +1,4 @@
+/*entities/Prescricao.js */
 class Prescricao {
   constructor({ id, consultaId, medicamento, dosagem, duracao, observacoes }) {
     if (!id) throw new Error('ID da prescrição é obrigatório');

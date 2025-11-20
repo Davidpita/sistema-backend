@@ -64,6 +64,19 @@ class UtenteRepository extends IUtenteRepository {
     });
   }
 
+  async findConsultasByUtenteId(utenteId) {
+  return await prisma.consulta.findMany({
+    where: { utenteId },
+    include: {
+      prescricao: true,
+      utente: {
+        select: { nome: true, contacto: true },
+      },
+    },
+    orderBy: { data: 'desc' },
+  });
+}
+
   async count() {
   return await prisma.utente.count();
 }

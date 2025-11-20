@@ -1,5 +1,5 @@
 class Consulta {
-  constructor({ id, utenteId, profissionalId, tipo, data, resumo, prescricaoId }) {
+  constructor({ id, utenteId, profissionalId, tipo, data, resumo, prescricaoId, realizada }) {
     if (!id) throw new Error('ID da consulta é obrigatório');
     if (!utenteId) throw new Error('ID do utente é obrigatório');
     if (!tipo) throw new Error('Tipo da consulta é obrigatório');
@@ -15,6 +15,7 @@ class Consulta {
     this.data = new Date(data);
     this.resumo = resumo || null;
     this.prescricaoId = prescricaoId || null;
+    this.realizada = realizada ?? false; // ⬅ NOVO
   }
 }
 
