@@ -11,8 +11,10 @@ app.use(express.json());
 const allowedOrigins = [
   'http://localhost:5173', // Frontend Admin
   'http://localhost:3001', // Frontend Utente
+  'https://sistema-frontend-rkvh.vercel.app', // Frontend Admin Vercel
 ];
 
+/*
 app.use(cors({
   origin: function (origin, callback) {
     // Permite requisições sem origin (como Postman) e as que estiverem na lista
@@ -25,6 +27,18 @@ app.use(cors({
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+}));
+ */
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true); // permitir Postman ou server-side
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'CORS policy: Esta origem não é permitida!';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
 }));
 
 // Middleware de fallback para pré-requisições OPTIONS
